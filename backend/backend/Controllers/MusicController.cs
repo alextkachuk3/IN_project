@@ -1,23 +1,21 @@
-﻿using IN_lab3.Models;
-using IN_lab3.Services.MusicService;
-using IN_lab3.Services.UserService;
+﻿using backend.Models;
+using backend.Services.MusicService;
+using backend.Services.UserService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
-namespace IN_lab3.Controllers
+namespace backend.Controllers
 {
     [ApiController]
     [Route("[controller]")]
     public class MusicController : Controller
     {
-        private readonly ILogger<UserController> _logger;
         private readonly IUserService _userService;
         private readonly IMusicService _musicService;
         private readonly string uploadsFolder;
 
-        public MusicController(ILogger<UserController> logger, IUserService userService, IMusicService musicService)
+        public MusicController(IUserService userService, IMusicService musicService)
         {
-            _logger = logger;
             _userService = userService;
             _musicService = musicService;
             uploadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Music");
@@ -63,7 +61,7 @@ namespace IN_lab3.Controllers
 
         [Authorize]
         [HttpPost("Upload")]
-        public async Task<IActionResult> Upload(IFormFile file, [FromForm]string? name)
+        public async Task<IActionResult> Upload(IFormFile file, [FromForm] string? name)
         {
             if (file == null || file.Length <= 0)
             {
@@ -90,7 +88,7 @@ namespace IN_lab3.Controllers
             }
 
             User user = _userService.GetUser(User.Identity!.Name!)!;
-            Music music = new Music(id, name, file.Length, user);
+            Music music = new(id, name, file.Length, user);
 
             try
             {
@@ -104,20 +102,19 @@ namespace IN_lab3.Controllers
             return Ok(new { Message = "file_uploaded_successfully" });
         }
 
-        private bool IsFileMP3(string filePath)
+        private static bool IsFileMP3(string filePath)
         {
-            using (FileStream fs = new FileStream(filePath, FileMode.Open, FileAccess.Read))
+            FileStream fs = new(filePath, FileMode.Open, FileAccess.Read);
+
+            if (fs.Length < 4)
             {
-                if (fs.Length < 4)
-                {
-                    return false;
-                }
-
-                byte[] header = new byte[3];
-                fs.Read(header, 0, 3);
-
-                return header[0] == 0x49 && header[1] == 0x44 && header[2] == 0x33;
+                return false;
             }
+
+            byte[] header = new byte[3];
+            fs.Read(header, 0, 3);
+
+            return header[0] == 0x49 && header[1] == 0x44 && header[2] == 0x33;
         }
     }
 }

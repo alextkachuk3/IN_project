@@ -1,8 +1,6 @@
-using IN_lab3.Data;
-using IN_lab3.Services.MusicService;
-using IN_lab3.Services.UserService;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Authentication.OAuth;
+using backend.Data;
+using backend.Services.MusicService;
+using backend.Services.UserService;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
@@ -35,7 +33,7 @@ builder.Services.AddSwaggerGen(option =>
                     Id="Bearer"
                 }
             },
-            new string[]{}
+            Array.Empty<string>()
         }
     });
 });
@@ -56,11 +54,11 @@ builder.Services.AddAuthentication("Bearer").AddJwtBearer(options =>
     options.TokenValidationParameters = new TokenValidationParameters
     {
         ValidateIssuer = true,
-        ValidIssuer = "issuer",
+        ValidIssuer = builder.Configuration["Jwt:Issuer"],
         ValidateAudience = true,
-        ValidAudience = "audience",
+        ValidAudience = builder.Configuration["Jwt:Audience"],
         ValidateLifetime = true,
-        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("super_secret_keysuper_secret_key")),
+        IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!)),
         ValidateIssuerSigningKey = true,
     };
 });
@@ -83,6 +81,7 @@ app.UseCors(builder => builder
 
 app.UseHttpsRedirection();
 
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

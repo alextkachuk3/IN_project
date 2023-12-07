@@ -1,20 +1,14 @@
-﻿using IN_lab3.Data;
-using IN_lab3.Models;
-using Microsoft.EntityFrameworkCore;
+﻿using backend.Data;
+using backend.Models;
 
-namespace IN_lab3.Services.UserService
+namespace backend.Services.UserService
 {
-    public class UserService : IUserService
+    public class UserService(ApplicationDbContext dbContext) : IUserService
     {
-        private readonly ApplicationDbContext _dbContext;
-
-        public UserService(ApplicationDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
+        private readonly ApplicationDbContext _dbContext = dbContext;
 
         public void AddUser(string username, string password)
-        {            
+        {
             try
             {
                 _dbContext.Users?.Add(new User(username, password));

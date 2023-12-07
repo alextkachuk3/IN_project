@@ -1,14 +1,8 @@
-﻿namespace IN_lab3.Models
+﻿namespace backend.Models
 {
-    public class UserDto
+    public class UserDto(string username, string password)
     {
-        public UserDto(string username, string password)
-        {
-            Username = username;
-            Password = password;
-        }
-
-        public string Username { get; set; }
-        public string Password { get; set; }
+        public string Username { get; set; } = username;
+        public string Password { get; set; } = password;
     }
 }

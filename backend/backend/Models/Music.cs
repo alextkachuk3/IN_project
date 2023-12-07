@@ -1,9 +1,8 @@
-﻿using IN_lab3.Models;
+﻿using backend.Models;
 using System.ComponentModel.DataAnnotations;
 
-namespace IN_lab3.Models
+namespace backend.Models
 {
-
     public class Music
     {
         public Music() { }

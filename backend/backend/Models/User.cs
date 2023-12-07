@@ -1,14 +1,13 @@
 ﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
-using System.Data;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
-namespace IN_lab3.Models
+namespace backend.Models
 {
     [Index(nameof(Username), IsUnique = true)]
-    public class User
+    public partial class User
     {
         public User() { }
 
@@ -38,14 +37,14 @@ namespace IN_lab3.Models
         [MaxLength(16)]
         public byte[]? Salt { get; set; }
 
-        private static Regex regex = new Regex("^[a-zA-Z0-9]*$");
+        private static readonly Regex regex = MyRegex();
 
         public static bool IsAlphanumeric(string input)
         {
             return regex.IsMatch(input);
         }
 
-        private byte[] GenerateSalt()
+        private static byte[] GenerateSalt()
         {
             byte[] salt = new byte[16];
             using (var rng = RandomNumberGenerator.Create())
@@ -54,7 +53,7 @@ namespace IN_lab3.Models
             }
             return salt;
         }
-        private byte[] HashPassword(string password, byte[] salt)
+        private static byte[] HashPassword(string password, byte[] salt)
         {
             byte[] hashedPassword = KeyDerivation.Pbkdf2(
                 password: password,
@@ -65,5 +64,8 @@ namespace IN_lab3.Models
 
             return hashedPassword;
         }
+
+        [GeneratedRegex("^[a-zA-Z0-9]*$")]
+        private static partial Regex MyRegex();
     }
 }

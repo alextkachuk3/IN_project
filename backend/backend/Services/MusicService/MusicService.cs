@@ -1,17 +1,12 @@
-﻿using IN_lab3.Data;
-using IN_lab3.Models;
+﻿using backend.Data;
+using backend.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace IN_lab3.Services.MusicService
+namespace backend.Services.MusicService
 {
-    public class MusicService : IMusicService
+    public class MusicService(ApplicationDbContext dbContext) : IMusicService
     {
-        private readonly ApplicationDbContext _dbContext;
-
-        public MusicService(ApplicationDbContext dbContext)
-        {
-            _dbContext = dbContext;
-        }
+        private readonly ApplicationDbContext _dbContext = dbContext;
 
         public void DeleteMusic(Guid id, User user)
         {

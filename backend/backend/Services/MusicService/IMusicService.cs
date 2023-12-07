@@ -1,6 +1,6 @@
-﻿using IN_lab3.Models;
+﻿using backend.Models;
 
-namespace IN_lab3.Services.MusicService
+namespace backend.Services.MusicService
 {
     public interface IMusicService
     {

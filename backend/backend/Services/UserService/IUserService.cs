@@ -1,6 +1,6 @@
-﻿using IN_lab3.Models;
+﻿using backend.Models;
 
-namespace IN_lab3.Services.UserService
+namespace backend.Services.UserService
 {
     public interface IUserService
     {

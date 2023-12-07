@@ -1,16 +1,9 @@
-﻿namespace IN_lab3.Models
+﻿namespace backend.Models
 {
-    public class MusicDto
+    public class MusicDto(Guid id, string name)
     {
+        public Guid Id { get; set; } = id;
 
-        public MusicDto(Guid id, string name)
-        {
-            Id = id;
-            Name = name;
-        }
-
-        public Guid Id { get; set; }
-
-        public string Name { get; set; }
+        public string Name { get; set; } = name;
     }
 }

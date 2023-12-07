@@ -1,5 +1,5 @@
-﻿using IN_lab3.Models;
-using IN_lab3.Services.UserService;
+﻿using backend.Models;
+using backend.Services.UserService;
 using Microsoft.AspNetCore.Mvc;
 using System.Security.Claims;
 using Microsoft.IdentityModel.Tokens;
@@ -7,24 +7,29 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Text;
 using Microsoft.AspNetCore.Authorization;
 
-namespace IN_lab3.Controllers
+namespace backend.Controllers
 {
     [ApiController]
     [Route("[controller]")]
     public class UserController : Controller
     {
-        private readonly ILogger<UserController> _logger;
+        private readonly IConfiguration _configuration;
         private readonly IUserService _userService;
 
         private readonly SymmetricSecurityKey securityKey;
         private readonly SigningCredentials credentials;
 
-        public UserController(ILogger<UserController> logger, IUserService userService)
+        private readonly string issuer;
+        private readonly string audience;
+
+        public UserController(IUserService userService, IConfiguration configuration)
         {
-            _logger = logger;
             _userService = userService;
-            securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes("super_secret_keysuper_secret_key"));
+            _configuration = configuration;
+            securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"]!));
             credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
+            issuer = _configuration["Jwt:Issuer"]!;
+            audience = _configuration["Jwt:Audience"]!;
         }
 
         [HttpPost("Signup")]
@@ -75,8 +80,8 @@ namespace IN_lab3.Controllers
                 var claims = new List<Claim> { new(ClaimTypes.Name, user.Username!) };
 
                 var token = new JwtSecurityToken(
-                    issuer: "issuer",
-                    audience: "audience",
+                    issuer: issuer,
+                    audience: audience,
                     claims: claims,
                     expires: DateTime.Now.AddYears(1),
                     signingCredentials: credentials
@@ -99,7 +104,7 @@ namespace IN_lab3.Controllers
             return Ok(new { _userService.GetUser(User.Identity!.Name!)!.Username });
         }
 
-        private string? CheckCredentials(string? username, string? password)
+        private static string? CheckCredentials(string? username, string? password)
         {
             if (username is null)
             {
