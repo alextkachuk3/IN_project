@@ -24,7 +24,6 @@ namespace backend.Controllers
             {
                 Directory.CreateDirectory(uploadsFolder);
             }
-
         }
 
         [HttpGet("{id}")]

@@ -37,7 +37,7 @@ namespace backend.Models
         [MaxLength(16)]
         public byte[]? Salt { get; set; }
 
-        private static readonly Regex regex = MyRegex();
+        private static readonly Regex regex = UsernamePasswordValidationRegex();
 
         public static bool IsAlphanumeric(string input)
         {
@@ -66,6 +66,6 @@ namespace backend.Models
         }
 
         [GeneratedRegex("^[a-zA-Z0-9]*$")]
-        private static partial Regex MyRegex();
+        private static partial Regex UsernamePasswordValidationRegex();
     }
 }

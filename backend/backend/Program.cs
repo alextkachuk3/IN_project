@@ -67,25 +67,24 @@ builder.Services.AddCors();
 
 var app = builder.Build();
 
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
+app.UseHttpsRedirection();
+
+app.UseStaticFiles();
+
+app.MapControllers();
+
 app.UseCors(builder => builder
      .AllowAnyOrigin()
      .AllowAnyMethod()
      .AllowAnyHeader());
 
-app.UseHttpsRedirection();
-
 app.UseAuthentication();
 app.UseAuthorization();
-
-app.MapControllers();
-
-app.UseStaticFiles();
 
 app.Run();
