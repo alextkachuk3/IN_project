@@ -6,7 +6,9 @@ namespace backend.Services.MusicService
     {
         public Music? GetMusic(Guid id);
 
-        public void UploadMusic(Music music);
+        public FileStream GetMusicFileStream(Guid id);
+
+        public void UploadMusic(User user, IFormFile musicFile, string musicName, Cover? cover);
 
         public void DeleteMusic(Guid id, User user);
 

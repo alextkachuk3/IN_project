@@ -15,22 +15,17 @@ namespace backend.Controllers
     {
         private readonly IUserService _userService;
         private readonly IMusicService _musicService;
-        private readonly string musicUploadsFolder;
+
         private readonly string coverUploadsFolder;
 
         public MusicController(IUserService userService, IMusicService musicService)
         {
             _userService = userService;
             _musicService = musicService;
-            musicUploadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Music");
+
             coverUploadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Cover");
 
-            if (!Directory.Exists(musicUploadsFolder))
-            {
-                Directory.CreateDirectory(musicUploadsFolder);
-            }
-            
-            if(!Directory.Exists(coverUploadsFolder))
+            if (!Directory.Exists(coverUploadsFolder))
             {
                 Directory.CreateDirectory(coverUploadsFolder);
             }
@@ -39,23 +34,13 @@ namespace backend.Controllers
         [HttpGet("{id}")]
         public IActionResult GetMusicFile(string id)
         {
-            Music? music = _musicService.GetMusic(Guid.Parse(id));
-
-            if (music == null)
+            try
             {
-                return NotFound(new { Error = "file_not_found" });
+                return File(_musicService.GetMusicFileStream(Guid.Parse(id)), "audio/mpeg");
             }
-
-            var filePath = Path.Combine(musicUploadsFolder, music.Id.ToString());
-
-            if (System.IO.File.Exists(filePath))
+            catch (FileNotFoundException ex)
             {
-                var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-                return File(fileStream, "audio/mpeg");
-            }
-            else
-            {
-                return NotFound(new { Error = "file_not_found" });
+                return NotFound(new { Error = ex.Message });
             }
         }
 
@@ -70,25 +55,27 @@ namespace backend.Controllers
 
         [Authorize]
         [HttpPost("Upload")]
-        public async Task<IActionResult> Upload(IFormFile file, [FromForm] string? name, IFormFile? cover)
+        public IActionResult Upload(IFormFile musicFile, [FromForm] string musicName, IFormFile? coverFile)
         {
-            if (file == null || file.Length <= 0)
+            if (musicFile == null || musicFile.Length <= 0)
             {
                 return BadRequest(new { Error = "invalid_file" });
             }
 
-            if (name == null || name.Length < 1 || name.Length > 70)
+            if (musicName == null || musicName.Length < 1 || musicName.Length > 70)
             {
                 return BadRequest(new { Error = "invalid_name" });
             }
 
-            if (cover != null)
+            Cover? cover = null;
+
+            if (coverFile != null)
             {
-                using (Stream stream = cover.OpenReadStream())
+                using (Stream stream = coverFile.OpenReadStream())
                 {
                     Guid coverId = Guid.NewGuid();
                     string coverFilePath = Path.Combine(coverUploadsFolder, coverId.ToString());
-                    
+
                     Image image = Image.Load(stream);
                     image.Mutate(x => x.Resize(new ResizeOptions
                     {
@@ -101,47 +88,19 @@ namespace backend.Controllers
             }
 
             Guid musicId = Guid.NewGuid();
-            string musicFilePath = Path.Combine(musicUploadsFolder, musicId.ToString());
-
-            using (var fileStream = new FileStream(musicFilePath, FileMode.Create))
-            {
-                await file.CopyToAsync(fileStream);
-            }
-
-            if (!IsFileMP3(musicFilePath))
-            {
-                _musicService.DeleteMusic(musicFilePath);
-                return BadRequest(new { Error = "invalid_file" });
-            }
 
             User user = _userService.GetUser(User.Identity!.Name!)!;
-            Music music = new(musicId, name, file.Length, user);
 
             try
             {
-                _musicService.UploadMusic(music);
+                _musicService.UploadMusic(user, musicFile, musicName, cover);
             }
-            catch
+            catch (Exception ex)
             {
-                return StatusCode(500, new { Error = "internal_server_error" });
+                return StatusCode(500, new { Error = ex.Message });
             }
 
             return Ok(new { Message = "file_uploaded_successfully" });
-        }
-
-        private static bool IsFileMP3(string filePath)
-        {
-            FileStream fs = new(filePath, FileMode.Open, FileAccess.Read);
-
-            if (fs.Length < 4)
-            {
-                return false;
-            }
-
-            byte[] header = new byte[3];
-            fs.Read(header, 0, 3);
-
-            return header[0] == 0x49 && header[1] == 0x44 && header[2] == 0x33;
         }
     }
 }

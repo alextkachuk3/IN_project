@@ -1,12 +1,27 @@
 ﻿using backend.Data;
 using backend.Models;
+using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.MusicService
 {
-    public class MusicService(ApplicationDbContext dbContext) : IMusicService
+    public class MusicService : IMusicService
     {
-        private readonly ApplicationDbContext _dbContext = dbContext;
+        public MusicService(ApplicationDbContext dbContext)
+        {
+            _dbContext = dbContext;
+            musicUploadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Music");
+
+            if (!Directory.Exists(musicUploadsFolder))
+            {
+                Directory.CreateDirectory(musicUploadsFolder);
+            }
+        }
+
+        private readonly ApplicationDbContext _dbContext;
+
+        private readonly string musicUploadsFolder;
 
         public void DeleteMusic(Guid id, User user)
         {
@@ -26,7 +41,7 @@ namespace backend.Services.MusicService
                     finally
                     {
                         _dbContext.SaveChanges();
-                        DeleteMusic(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Music", id.ToString()));
+                        DeleteMusic(Path.Combine(musicUploadsFolder, id.ToString()));
                     }
                 }
                 else
@@ -60,21 +75,64 @@ namespace backend.Services.MusicService
             return _dbContext.Music?.Where(i => i.User!.Equals(user)).ToList();
         }
 
-        public void UploadMusic(Music music)
+        public FileStream GetMusicFileStream(Guid id)
         {
+            Music? music = GetMusic(id) ?? throw new FileNotFoundException();
+
+            var filePath = Path.Combine(musicUploadsFolder, music.Id.ToString());
+
+            if (System.IO.File.Exists(filePath))
+            {
+                var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                return fileStream;
+            }
+            else
+            {
+                throw new FileNotFoundException();
+            }
+        }
+
+        public void UploadMusic(User user, IFormFile musicFile, string musicName, Cover? cover)
+        {
+            Guid musicId = Guid.NewGuid();
+            string musicFilePath = Path.Combine(musicUploadsFolder, musicId.ToString());
+
+            using (var fileStream = new FileStream(musicFilePath, FileMode.Create))
+            {
+                if (!IsFileMP3(musicFile.OpenReadStream()))
+                {
+                    throw new InvalidDataException("invalid_file_format");
+                }
+                musicFile.CopyTo(fileStream);
+            }
+
+            Music music = new(musicId, musicName, musicFile.Length, user);
+
             try
             {
                 _dbContext.Music?.Add(music);
             }
             catch
             {
-                throw;
+                throw new Exception("internal_server_error");
             }
             finally
             {
                 _dbContext.SaveChanges();
             }
+        }
 
+        private static bool IsFileMP3(Stream fileStream)
+        {
+            if (fileStream.Length < 4)
+            {
+                return false;
+            }
+
+            byte[] header = new byte[3];
+            fileStream.Read(header, 0, 3);
+
+            return header[0] == 0x49 && header[1] == 0x44 && header[2] == 0x33;
         }
     }
 }
