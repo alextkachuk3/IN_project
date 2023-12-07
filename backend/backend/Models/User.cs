@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Cryptography.KeyDerivation;
 using Microsoft.EntityFrameworkCore;
+using System.Collections;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Security.Cryptography;
 using System.Text.RegularExpressions;
 
@@ -36,6 +38,10 @@ namespace backend.Models
         [Required]
         [MaxLength(16)]
         public byte[]? Salt { get; set; }
+
+        public LikedMusic LikedMusic { get; set; }
+
+        public DislikedMusic DislikedMusic { get; set; }
 
         private static readonly Regex regex = UsernamePasswordValidationRegex();
 

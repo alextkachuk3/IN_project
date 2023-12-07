@@ -1,9 +1,8 @@
-﻿using backend.Models;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace backend.Models
 {
-    public class Music
+    public partial class Music
     {
         public Music() { }
 
