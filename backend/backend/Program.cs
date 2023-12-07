@@ -1,4 +1,5 @@
 using backend.Data;
+using backend.Services.CoverService;
 using backend.Services.MusicService;
 using backend.Services.UserService;
 using Microsoft.EntityFrameworkCore;
@@ -47,8 +48,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options =>
 
 builder.Services.AddScoped<IUserService, UserService>();
 builder.Services.AddScoped<IMusicService, MusicService>();
+builder.Services.AddScoped<ICoverService, CoverService>();
 
-builder.Services.AddAuthorization();
 builder.Services.AddAuthentication("Bearer").AddJwtBearer(options =>
 {
     options.TokenValidationParameters = new TokenValidationParameters
@@ -63,6 +64,8 @@ builder.Services.AddAuthentication("Bearer").AddJwtBearer(options =>
     };
 });
 
+builder.Services.AddAuthorization();
+
 builder.Services.AddCors();
 
 var app = builder.Build();
@@ -74,7 +77,6 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
-
 app.MapControllers();
 
 app.UseCors(builder => builder

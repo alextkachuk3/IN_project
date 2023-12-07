@@ -1,7 +1,9 @@
-﻿namespace backend.Services.CoverService
+﻿using backend.Models;
+
+namespace backend.Services.CoverService
 {
     public interface ICoverService
     {
-        void AddCover();
+        Cover AddCover(IFormFile coverFile);
     }
 }

@@ -7,13 +7,14 @@ namespace backend.Models
     {
         public Music() { }
 
-        public Music(Guid id, string name, long fileSize, User user)
+        public Music(Guid id, string name, long fileSize, User user, Cover? cover)
         {
             Id = id;
             Name = name;
             FileSize = fileSize;
             User = user;
             UploadDate = DateTime.Now;
+            Cover = cover;
         }
 
         public Guid Id { get; set; }

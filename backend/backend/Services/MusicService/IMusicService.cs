@@ -14,8 +14,8 @@ namespace backend.Services.MusicService
 
         public void DeleteMusic(string filePath);
 
-        List<Music>? GetUserMusic(User user);
+        public List<Music>? GetUserMusic(User user);
 
-        List<Music>? GetAllMusic();
+        public List<Music>? GetAllMusic();
     }
 }

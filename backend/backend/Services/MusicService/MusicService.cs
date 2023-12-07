@@ -1,27 +1,25 @@
 ﻿using backend.Data;
 using backend.Models;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.MusicService
 {
     public class MusicService : IMusicService
     {
+        private readonly ApplicationDbContext _dbContext;
+
+        private readonly string _musicUploadsFolder;
+
         public MusicService(ApplicationDbContext dbContext)
         {
             _dbContext = dbContext;
-            musicUploadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Music");
+            _musicUploadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Music");
 
-            if (!Directory.Exists(musicUploadsFolder))
+            if (!Directory.Exists(_musicUploadsFolder))
             {
-                Directory.CreateDirectory(musicUploadsFolder);
+                Directory.CreateDirectory(_musicUploadsFolder);
             }
         }
-
-        private readonly ApplicationDbContext _dbContext;
-
-        private readonly string musicUploadsFolder;
 
         public void DeleteMusic(Guid id, User user)
         {
@@ -41,7 +39,7 @@ namespace backend.Services.MusicService
                     finally
                     {
                         _dbContext.SaveChanges();
-                        DeleteMusic(Path.Combine(musicUploadsFolder, id.ToString()));
+                        DeleteMusic(Path.Combine(_musicUploadsFolder, id.ToString()));
                     }
                 }
                 else
@@ -79,7 +77,7 @@ namespace backend.Services.MusicService
         {
             Music? music = GetMusic(id) ?? throw new FileNotFoundException();
 
-            var filePath = Path.Combine(musicUploadsFolder, music.Id.ToString());
+            var filePath = Path.Combine(_musicUploadsFolder, music.Id.ToString());
 
             if (System.IO.File.Exists(filePath))
             {
@@ -95,7 +93,7 @@ namespace backend.Services.MusicService
         public void UploadMusic(User user, IFormFile musicFile, string musicName, Cover? cover)
         {
             Guid musicId = Guid.NewGuid();
-            string musicFilePath = Path.Combine(musicUploadsFolder, musicId.ToString());
+            string musicFilePath = Path.Combine(_musicUploadsFolder, musicId.ToString());
 
             using (var fileStream = new FileStream(musicFilePath, FileMode.Create))
             {
@@ -106,7 +104,7 @@ namespace backend.Services.MusicService
                 musicFile.CopyTo(fileStream);
             }
 
-            Music music = new(musicId, musicName, musicFile.Length, user);
+            Music music = new(musicId, musicName, musicFile.Length, user, cover);
 
             try
             {

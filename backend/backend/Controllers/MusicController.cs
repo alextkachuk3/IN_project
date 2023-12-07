@@ -1,35 +1,20 @@
 ﻿using backend.Models;
+using backend.Services.CoverService;
 using backend.Services.MusicService;
 using backend.Services.UserService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SixLabors.ImageSharp;
-using SixLabors.ImageSharp.PixelFormats;
-using SixLabors.ImageSharp.Processing;
 
 namespace backend.Controllers
 {
     [ApiController]
     [Route("[controller]")]
-    public class MusicController : Controller
+    public class MusicController(IUserService userService, IMusicService musicService, ICoverService coverService) : Controller
     {
-        private readonly IUserService _userService;
-        private readonly IMusicService _musicService;
-
-        private readonly string coverUploadsFolder;
-
-        public MusicController(IUserService userService, IMusicService musicService)
-        {
-            _userService = userService;
-            _musicService = musicService;
-
-            coverUploadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Cover");
-
-            if (!Directory.Exists(coverUploadsFolder))
-            {
-                Directory.CreateDirectory(coverUploadsFolder);
-            }
-        }
+        private readonly IUserService _userService = userService;
+        private readonly IMusicService _musicService = musicService;
+        private readonly ICoverService _coverService = coverService;
 
         [HttpGet("{id}")]
         public IActionResult GetMusicFile(string id)
@@ -71,23 +56,15 @@ namespace backend.Controllers
 
             if (coverFile != null)
             {
-                using (Stream stream = coverFile.OpenReadStream())
+                try
                 {
-                    Guid coverId = Guid.NewGuid();
-                    string coverFilePath = Path.Combine(coverUploadsFolder, coverId.ToString());
-
-                    Image image = Image.Load(stream);
-                    image.Mutate(x => x.Resize(new ResizeOptions
-                    {
-                        Size = new Size(500, 500),
-                        Mode = ResizeMode.Max
-                    }));
-                    image.SaveAsPng(coverFilePath);
-                    image.Dispose();
+                    cover = _coverService.AddCover(coverFile);
+                }
+                catch (Exception ex)
+                {
+                    return BadRequest(new { Error = ex.Message });
                 }
             }
-
-            Guid musicId = Guid.NewGuid();
 
             User user = _userService.GetUser(User.Identity!.Name!)!;
 
