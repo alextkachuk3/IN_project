@@ -3,6 +3,9 @@ using backend.Services.MusicService;
 using backend.Services.UserService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using SixLabors.ImageSharp;
+using SixLabors.ImageSharp.PixelFormats;
+using SixLabors.ImageSharp.Processing;
 
 namespace backend.Controllers
 {
@@ -12,17 +15,24 @@ namespace backend.Controllers
     {
         private readonly IUserService _userService;
         private readonly IMusicService _musicService;
-        private readonly string uploadsFolder;
+        private readonly string musicUploadsFolder;
+        private readonly string coverUploadsFolder;
 
         public MusicController(IUserService userService, IMusicService musicService)
         {
             _userService = userService;
             _musicService = musicService;
-            uploadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Music");
+            musicUploadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Music");
+            coverUploadsFolder = Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Cover");
 
-            if (!Directory.Exists(uploadsFolder))
+            if (!Directory.Exists(musicUploadsFolder))
             {
-                Directory.CreateDirectory(uploadsFolder);
+                Directory.CreateDirectory(musicUploadsFolder);
+            }
+            
+            if(!Directory.Exists(coverUploadsFolder))
+            {
+                Directory.CreateDirectory(coverUploadsFolder);
             }
         }
 
@@ -33,10 +43,10 @@ namespace backend.Controllers
 
             if (music == null)
             {
-                return NotFound();
+                return NotFound(new { Error = "file_not_found" });
             }
 
-            var filePath = Path.Combine(uploadsFolder, music.Id.ToString());
+            var filePath = Path.Combine(musicUploadsFolder, music.Id.ToString());
 
             if (System.IO.File.Exists(filePath))
             {
@@ -45,7 +55,7 @@ namespace backend.Controllers
             }
             else
             {
-                return NotFound();
+                return NotFound(new { Error = "file_not_found" });
             }
         }
 
@@ -60,7 +70,7 @@ namespace backend.Controllers
 
         [Authorize]
         [HttpPost("Upload")]
-        public async Task<IActionResult> Upload(IFormFile file, [FromForm] string? name)
+        public async Task<IActionResult> Upload(IFormFile file, [FromForm] string? name, IFormFile? cover)
         {
             if (file == null || file.Length <= 0)
             {
@@ -72,22 +82,40 @@ namespace backend.Controllers
                 return BadRequest(new { Error = "invalid_name" });
             }
 
-            Guid id = Guid.NewGuid();
-            string filePath = Path.Combine(uploadsFolder, id.ToString());
+            if (cover != null)
+            {
+                using (Stream stream = cover.OpenReadStream())
+                {
+                    Guid coverId = Guid.NewGuid();
+                    string coverFilePath = Path.Combine(coverUploadsFolder, coverId.ToString());
+                    
+                    Image image = Image.Load(stream);
+                    image.Mutate(x => x.Resize(new ResizeOptions
+                    {
+                        Size = new Size(500, 500),
+                        Mode = ResizeMode.Max
+                    }));
+                    image.SaveAsPng(coverFilePath);
+                    image.Dispose();
+                }
+            }
 
-            using (var fileStream = new FileStream(filePath, FileMode.Create))
+            Guid musicId = Guid.NewGuid();
+            string musicFilePath = Path.Combine(musicUploadsFolder, musicId.ToString());
+
+            using (var fileStream = new FileStream(musicFilePath, FileMode.Create))
             {
                 await file.CopyToAsync(fileStream);
             }
 
-            if (!IsFileMP3(filePath))
+            if (!IsFileMP3(musicFilePath))
             {
-                _musicService.DeleteMusic(filePath);
+                _musicService.DeleteMusic(musicFilePath);
                 return BadRequest(new { Error = "invalid_file" });
             }
 
             User user = _userService.GetUser(User.Identity!.Name!)!;
-            Music music = new(id, name, file.Length, user);
+            Music music = new(musicId, name, file.Length, user);
 
             try
             {

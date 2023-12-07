@@ -30,5 +30,7 @@ namespace backend.Models
 
         [Required]
         public User? User { get; set; }
+
+        public Cover? Cover { get; set; }
     }
 }

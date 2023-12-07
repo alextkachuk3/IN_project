@@ -9,5 +9,7 @@ namespace backend.Data
 
         public DbSet<Music>? Music { get; set; }
 
+        public DbSet<Cover>? Cover { get; set; }
+
     }
 }

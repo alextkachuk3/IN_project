@@ -31,8 +31,12 @@ namespace backend.Services.MusicService
                 }
                 else
                 {
-                    throw new InvalidOperationException("User tried to delete a music file that doesn't own!");
+                    throw new InvalidOperationException("user_doesnt_own_file");
                 }
+            }
+            else
+            {
+                throw new InvalidOperationException("file_not_exists");
             }
         }
 
