@@ -39,6 +39,15 @@ namespace backend.Controllers
         }
 
         [Authorize]
+        [HttpPost("Like")]
+        public IActionResult LikeMusic(string id)
+        {
+            User user = _userService.GetUser(User.Identity!.Name!)!;
+            _userService.LikeMusic(user.Id, Guid.Parse(id));
+            return Ok();
+        }
+
+        [Authorize]
         [HttpPost("Upload")]
         public IActionResult Upload(IFormFile musicFile, [FromForm] string musicName, IFormFile? coverFile)
         {

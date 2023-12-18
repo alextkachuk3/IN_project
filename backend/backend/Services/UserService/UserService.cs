@@ -1,5 +1,6 @@
 ﻿using backend.Data;
 using backend.Models;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.UserService
 {
@@ -11,7 +12,11 @@ namespace backend.Services.UserService
         {
             try
             {
-                _dbContext.Users?.Add(new User(username, password));
+                User user = new(username, password)
+                {
+                    LikedPlaylist = _dbContext.Users.Select(e => e.LikedPlaylist).DefaultIfEmpty().Max() + 1
+                };
+                _dbContext.Users?.Add(user);
             }
             catch
             {
@@ -23,6 +28,11 @@ namespace backend.Services.UserService
             }
         }
 
+        public void DislikeMusic(User user, Guid musicId)
+        {
+            throw new NotImplementedException();
+        }
+
         public User? GetUser(string username)
         {
             return _dbContext.Users?.FirstOrDefault(u => u.Username!.Equals(username));
@@ -31,6 +41,22 @@ namespace backend.Services.UserService
         public bool IsUserNameUsed(string username)
         {
             return _dbContext.Users?.Where(u => u.Username!.Equals(username)).Count() > 0;
+        }
+
+        public void LikeMusic(int userId, Guid musicId)
+        {
+            try
+            {
+                _dbContext.Playlists.Add(new PlaylistItem(_dbContext.Users!.FirstOrDefault(e => e.Id.Equals(userId))!.LikedPlaylist, musicId));
+            }
+            catch
+            {
+                throw;
+            }
+            finally
+            {
+                _dbContext.SaveChanges();
+            }
         }
     }
 }

@@ -25,6 +25,7 @@ namespace backend.Models
             return PasswordHash!.SequenceEqual(HashPassword(password, salt));
         }
 
+        [Key]
         public int Id { get; set; }
 
         [Required]
@@ -39,9 +40,8 @@ namespace backend.Models
         [MaxLength(16)]
         public byte[]? Salt { get; set; }
 
-        public LikedMusic LikedMusic { get; set; }
-
-        public DislikedMusic DislikedMusic { get; set; }
+        [Required]
+        public int LikedPlaylist { get; set; }
 
         private static readonly Regex regex = UsernamePasswordValidationRegex();
 
@@ -59,6 +59,7 @@ namespace backend.Models
             }
             return salt;
         }
+
         private static byte[] HashPassword(string password, byte[] salt)
         {
             byte[] hashedPassword = KeyDerivation.Pbkdf2(

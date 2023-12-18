@@ -32,5 +32,6 @@ namespace backend.Models
         public User? User { get; set; }
 
         public Cover? Cover { get; set; }
+
     }
 }
