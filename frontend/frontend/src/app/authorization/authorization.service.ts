@@ -9,12 +9,12 @@ export class AuthorizationService {
 
   postSignIn(user: User) {
     const body = { username: user.username, password: user.password };
-    return this.http.post("https://localhost:7232/User/Login", body);
+    return this.http.post("http://alexunivdeploy-001-site1.ftempurl.com/User/Login", body);
   }
 
   postSignUp(user: User) {
     const body = { username: user.username, password: user.password };
-    return this.http.post("https://localhost:7232/User/Signup", body);
+    return this.http.post("http://alexunivdeploy-001-site1.ftempurl.com/User/Signup", body);
   }
 
   getUsername() {
@@ -22,7 +22,7 @@ export class AuthorizationService {
       'Authorization': `Bearer ${this.getToken()}`,
     });
 
-    return this.http.get("https://localhost:7232/User/Username", { headers });
+    return this.http.get("http://alexunivdeploy-001-site1.ftempurl.com/User/Username", { headers });
   }
 
   saveToken(token: string): void {
