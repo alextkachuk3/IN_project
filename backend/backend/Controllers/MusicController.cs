@@ -87,6 +87,15 @@ namespace backend.Controllers
         }
 
         [Authorize]
+        [HttpPost("RemoveLike")]
+        public IActionResult RemoveLikeMusic(string id)
+        {
+            User user = _userService.GetUser(User.Identity!.Name!)!;
+            _userService.RemoveLikeMusic(user.Id, Guid.Parse(id));
+            return Ok();
+        }
+
+        [Authorize]
         [HttpPost("Upload")]
         public IActionResult Upload(IFormFile musicFile, [FromForm] string musicName, IFormFile? coverFile)
         {

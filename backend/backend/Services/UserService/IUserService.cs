@@ -10,7 +10,7 @@ namespace backend.Services.UserService
 
         public void LikeMusic(int userId, Guid musicId);
 
-        public void DislikeMusic(User user, Guid musicId);
+        public void RemoveLikeMusic(int userId, Guid musicId);
 
         public User? GetUser(string username);
     }

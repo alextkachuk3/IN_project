@@ -28,11 +28,6 @@ namespace backend.Services.UserService
             }
         }
 
-        public void DislikeMusic(User user, Guid musicId)
-        {
-            throw new NotImplementedException();
-        }
-
         public User? GetUser(string username)
         {
             return _dbContext.Users?.FirstOrDefault(u => u.Username!.Equals(username));
@@ -45,6 +40,7 @@ namespace backend.Services.UserService
 
         public void LikeMusic(int userId, Guid musicId)
         {
+            RemoveLikeMusic(userId, musicId);
             try
             {
                 _dbContext.Playlists.Add(new PlaylistItem(_dbContext.Users!.FirstOrDefault(e => e.Id.Equals(userId))!.LikedPlaylist, musicId));
@@ -57,6 +53,22 @@ namespace backend.Services.UserService
             {
                 _dbContext.SaveChanges();
             }
+        }
+
+        public void RemoveLikeMusic(int userId, Guid musicId)
+        {
+            PlaylistItem? playlistItem = _dbContext.Playlists.Where(e => e.PlaylistId.Equals(_dbContext.Users.Where(e => e.Id.Equals(userId)).FirstOrDefault()!.LikedPlaylist)).FirstOrDefault();
+            if (playlistItem != null)
+            {
+                try
+                {
+                    _dbContext.Playlists.Remove(playlistItem);
+                }
+                finally
+                {
+                    _dbContext.SaveChanges();
+                }
+            }           
         }
     }
 }
