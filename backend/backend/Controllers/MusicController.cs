@@ -52,6 +52,14 @@ namespace backend.Controllers
         }
 
         [Authorize]
+        [HttpGet("LikedPlaylist")]
+        public IEnumerable<MusicInfoDto> GetLikedMusic()
+        {
+            User user = _userService.GetUser(User.Identity!.Name!)!;
+            return _musicService.GetLikedUserMusicInfo(user)!;
+        }
+
+        [Authorize]
         [HttpGet("Info/{id}")]
         public ActionResult<MusicInfoDto> GetMusicInfo(string id)
         {

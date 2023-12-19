@@ -60,17 +60,17 @@ namespace backend.Services.MusicService
 
         public List<Music>? GetAllMusic()
         {
-            return _dbContext.Music?.Include(i => i.User!.Username).ToList();
+            return [.. _dbContext.Music.Include(i => i.User!.Username)];
         }
 
         public Music? GetMusic(Guid id)
         {
-            return _dbContext.Music?.Where(i => i.Id.Equals(id)).FirstOrDefault() ?? throw new FileNotFoundException("file_not_found");
+            return _dbContext.Music.Where(i => i.Id.Equals(id)).FirstOrDefault() ?? throw new FileNotFoundException("file_not_found");
         }
 
         public List<Music>? GetUserMusic(User user)
         {
-            return _dbContext.Music?.Where(i => i.User!.Equals(user)).ToList();
+            return [.. _dbContext.Music.Where(i => i.User!.Equals(user))];
         }
 
         public FileStream GetMusicFileStream(Guid id)
@@ -135,15 +135,22 @@ namespace backend.Services.MusicService
 
         public bool CheckIfLiked(Guid id, User user)
         {
-            var t = _dbContext.Playlists.Where(i => i.PlaylistId.Equals(user.LikedPlaylist)).Where(i => i.MusicId.Equals(id)).FirstOrDefault();
-            if(t != null)
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return _dbContext.Playlists.Where(i => i.PlaylistId.Equals(user.LikedPlaylist)).Where(i => i.MusicId.Equals(id)).FirstOrDefault() != null;
+        }
+
+        public List<MusicInfoDto> GetLikedUserMusicInfo(User user)
+        {
+            var likedMusicIds = _dbContext.Playlists
+                .Where(ulm => ulm.PlaylistId == user.LikedPlaylist)
+                .Select(ulm => ulm.MusicId)
+                .ToList();
+
+            var likedMusicDetails = _dbContext.Music
+                .Where(m => likedMusicIds.Contains(m.Id))
+                .Select(m => new MusicInfoDto(m.Id, m.Name!, user.Username!, true))
+                .ToList();
+
+            return likedMusicDetails;
         }
     }
 }
