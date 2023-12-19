@@ -1,7 +1,9 @@
 ﻿using backend.Data;
 using backend.Models;
+using System.Linq;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
+using Microsoft.EntityFrameworkCore;
 
 namespace backend.Services.CoverService
 {
@@ -60,6 +62,29 @@ namespace backend.Services.CoverService
             _dbContext.Cover!.Add(cover);
 
             return cover;
+        }
+
+        public Cover? GetCoverByMusicId(Guid id)
+        {
+            Music music = _dbContext.Music?.Where(i => i.Id.Equals(id)).Include(e => e.Cover).FirstOrDefault() ?? throw new FileNotFoundException();
+            return music.Cover;
+        }
+
+        public FileStream GetCoverFileStream(Guid id)
+        {
+            Cover? cover = GetCoverByMusicId(id) ?? throw new FileNotFoundException();
+
+            var filePath = Path.Combine(_coverUploadsFolder, cover.Id.ToString());
+
+            if (System.IO.File.Exists(filePath))
+            {
+                var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                return fileStream;
+            }
+            else
+            {
+                throw new FileNotFoundException();
+            }
         }
     }
 }

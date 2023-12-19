@@ -29,6 +29,19 @@ namespace backend.Controllers
             }
         }
 
+        [HttpGet("Cover/{id}")]
+        public IActionResult GetMusicCover(string id)
+        {
+            try
+            {
+                return File(_coverService.GetCoverFileStream(Guid.Parse(id)), "image/jpeg");
+            }
+            catch (FileNotFoundException ex)
+            {
+                return NotFound(new { Error = ex.Message });
+            }
+        }
+
         [Authorize]
         [HttpGet]
         public IEnumerable<MusicDto> GetUserMusic()
