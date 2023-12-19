@@ -1,0 +1,10 @@
+footer a {
+  text-decoration: none;
+}
+
+header img {
+  width: 40px;
+  height: 40px;
+  filter: invert(1);
+  cursor: pointer;
+}

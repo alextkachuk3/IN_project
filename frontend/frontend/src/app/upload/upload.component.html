@@ -1,0 +1,20 @@
+<div class="container">
+  <div class="p-3 row">
+    <form (submit)="onSubmit()" enctype="multipart/form-data">
+      <div class="md-6 p-3">
+        <label class="form-label">File</label>
+        <input type="file" (change)="onFileSelected($event)" class="form-control" />
+      </div>
+
+      <div class="md-6 p-3">
+        <label class="form-label">Name</label>
+        <input type="text" [(ngModel)]="musicName" name="musicName" placeholder="Enter music name" class="form-control">
+      </div>
+
+      <div class="md-6 p-3">
+        <button type="submit" class="btn btn-primary">Upload</button>
+      </div>
+
+    </form>
+  </div>
+</div>
