@@ -65,7 +65,7 @@ namespace backend.Services.MusicService
 
         public Music? GetMusic(Guid id)
         {
-            return _dbContext.Music?.Where(i => i.Id.Equals(id)).FirstOrDefault();
+            return _dbContext.Music?.Where(i => i.Id.Equals(id)).FirstOrDefault() ?? throw new FileNotFoundException("file_not_found");
         }
 
         public List<Music>? GetUserMusic(User user)
@@ -79,7 +79,7 @@ namespace backend.Services.MusicService
 
             var filePath = Path.Combine(_musicUploadsFolder, music.Id.ToString());
 
-            if (System.IO.File.Exists(filePath))
+            if (File.Exists(filePath))
             {
                 var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
                 return fileStream;
@@ -131,6 +131,19 @@ namespace backend.Services.MusicService
             fileStream.Read(header, 0, 3);
 
             return header[0] == 0x49 && header[1] == 0x44 && header[2] == 0x33;
+        }
+
+        public bool CheckIfLiked(Guid id, User user)
+        {
+            var t = _dbContext.Playlists.Where(i => i.PlaylistId.Equals(user.LikedPlaylist)).Where(i => i.MusicId.Equals(id)).FirstOrDefault();
+            if(t != null)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
 }

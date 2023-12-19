@@ -1,6 +1,5 @@
 ﻿using backend.Data;
 using backend.Models;
-using System.Linq;
 using SixLabors.ImageSharp;
 using SixLabors.ImageSharp.Processing;
 using Microsoft.EntityFrameworkCore;
@@ -66,7 +65,7 @@ namespace backend.Services.CoverService
 
         public Cover? GetCoverByMusicId(Guid id)
         {
-            Music music = _dbContext.Music?.Where(i => i.Id.Equals(id)).Include(e => e.Cover).FirstOrDefault() ?? throw new FileNotFoundException();
+            Music music = _dbContext.Music?.Where(i => i.Id.Equals(id)).Include(e => e.Cover).FirstOrDefault() ?? throw new FileNotFoundException("file_not_found");
             return music.Cover;
         }
 
@@ -76,7 +75,7 @@ namespace backend.Services.CoverService
 
             var filePath = Path.Combine(_coverUploadsFolder, cover.Id.ToString());
 
-            if (System.IO.File.Exists(filePath))
+            if (File.Exists(filePath))
             {
                 var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
                 return fileStream;

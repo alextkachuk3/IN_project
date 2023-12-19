@@ -43,12 +43,30 @@ namespace backend.Controllers
         }
 
         [Authorize]
-        [HttpGet]
+        [HttpGet("My")]
         public IEnumerable<MusicDto> GetUserMusic()
         {
             User user = _userService.GetUser(User.Identity!.Name!)!;
             List<Music> music = _musicService.GetUserMusic(user)!;
             return music.Select(music => new MusicDto(music.Id, music.Name!)).ToArray();
+        }
+
+        [Authorize]
+        [HttpGet("Info/{id}")]
+        public ActionResult<MusicInfoDto> GetMusicInfo(string id)
+        {
+            User user = _userService.GetUser(User.Identity!.Name!)!;
+            Music? music;
+            try
+            {
+                music = _musicService.GetMusic(Guid.Parse(id));
+            }
+            catch (FileNotFoundException ex)
+            {
+                return NotFound(new { Error = ex.Message });
+            }
+
+            return new MusicInfoDto(music!.Id, music!.Name!, user!.Username!, _musicService.CheckIfLiked(Guid.Parse(id), user));
         }
 
         [Authorize]

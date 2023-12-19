@@ -7,9 +7,9 @@ namespace backend.Models
     {
         public PlaylistItem() { }
 
-        public PlaylistItem(int id, Guid musicId)
+        public PlaylistItem(int playlistId, Guid musicId)
         {
-            PlaylistId = id;
+            PlaylistId = playlistId;
             MusicId = musicId;
         }
 
