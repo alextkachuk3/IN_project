@@ -8,6 +8,7 @@ import { SignUpComponent } from "./authorization/sign-up/sign-up.component"
 import { PrivacyPolicyComponent } from "./privacy-policy.component";
 import { NotFoundComponent } from "./not-found.component";
 import { AuthGuard } from "./authorization/auth.guard";
+import { MyUploadsComponent } from "./my-uploads/my-uploads.component";
 
 const appRoutes: Routes = [
   { path: "", component: MainComponent, canActivate: [AuthGuard] },
@@ -15,6 +16,7 @@ const appRoutes: Routes = [
   { path: "signup", component: SignUpComponent, canActivate: [AuthGuard] },
   { path: "upload", component: UploadComponent, canActivate: [AuthGuard] },
   { path: "privacy", component: PrivacyPolicyComponent },
+  { path: "myuploads", component: MyUploadsComponent, canActivate: [AuthGuard]},
   { path: "**", component: NotFoundComponent }
 ];
 

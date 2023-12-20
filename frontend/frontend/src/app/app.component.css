@@ -8,3 +8,9 @@ header img {
   filter: invert(1);
   cursor: pointer;
 }
+
+.custom-link {
+  color: #fff;
+  font-weight: bold;
+  text-decoration: none !important;
+}
