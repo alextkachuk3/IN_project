@@ -1,12 +1,20 @@
-<div class="grid-container">
-  <div *ngFor="let music of musicList" class="grid-item">
-    <!-- Display music image here -->
-    <img [src]="" alt="Music Image" />
+<div class="center">
+  <div class="grid-container">
+    <div *ngFor="let music of musicList" class="grid-item">
+      <img src="../assets/images/upload.png" alt="Music Image" />
 
-    <!-- Display music name and uploader name getMusicImageSrc(music.id) -->
-    <div class="music-details">
-      <p>{{ music.name }}</p>
-      <p>{{ music.uploaderName }}</p>
+      <!-- Display music name and uploader name getMusicImageSrc(music.id) -->
+      <div class="music-details">
+        <p>{{ music.name }}</p>
+        <p>{{ music.uploaderName }}</p>
+      </div>
     </div>
   </div>
 </div>
+
+<footer class="footer text-muted fixed-bottom bg-dark p-1">
+  <div class="container">
+    <audio [src]="audioSource" controls autoplay id="musicPlayer" preload="metadata" class="col-sm-12 col-sm-offset-4">
+    </audio>
+  </div>
+</footer>

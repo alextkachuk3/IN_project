@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { MusicInfoDto } from './music-info.dto';
 import { NgIf, NgFor } from "@angular/common";
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Music } from './music';
 
 @Component({
   selector: 'app-main',
@@ -12,6 +13,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 })
 export class MainComponent implements OnInit {
   musicList: MusicInfoDto[] = [];
+  public musicPlayer = document.getElementById('musicPlayer') as HTMLAudioElement;
+  audioSource: string = '';
 
   constructor(private http: HttpClient) { }
 
