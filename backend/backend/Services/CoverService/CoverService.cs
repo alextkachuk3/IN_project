@@ -82,7 +82,8 @@ namespace backend.Services.CoverService
             }
             else
             {
-                throw new FileNotFoundException();
+                var fileStream = new FileStream(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets"), "default_cover.png"), FileMode.Open, FileAccess.Read);
+                return fileStream;
             }
         }
     }

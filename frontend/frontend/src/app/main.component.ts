@@ -28,4 +28,8 @@ export class MainComponent implements OnInit {
         this.musicList = musicList;
       });
   }
+
+  getMusicImageSrc(id: string) {
+    return `https://localhost:7232/Music/Cover/${id}`;
+  }
 }

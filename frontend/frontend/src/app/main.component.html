@@ -1,9 +1,9 @@
 <div class="center">
   <div class="grid-container">
     <div *ngFor="let music of musicList" class="grid-item">
-      <img src="../assets/images/upload.png" alt="Music Image" />
+      <img [src]="getMusicImageSrc(music.id)" alt="Music Image" />
 
-      <!-- Display music name and uploader name getMusicImageSrc(music.id) -->
+      <!-- Display music name and uploader name "../assets/images/upload.png" -->
       <div class="music-details">
         <p>{{ music.name }}</p>
         <p>{{ music.uploaderName }}</p>
