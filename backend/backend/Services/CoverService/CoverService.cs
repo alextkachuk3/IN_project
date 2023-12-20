@@ -23,7 +23,7 @@ namespace backend.Services.CoverService
         }
 
         public Cover AddCover(IFormFile coverFile)
-        {            
+        {
             Stream stream = coverFile.OpenReadStream();
             Image image;
 
@@ -71,20 +71,22 @@ namespace backend.Services.CoverService
 
         public FileStream GetCoverFileStream(Guid id)
         {
-            Cover? cover = GetCoverByMusicId(id) ?? throw new FileNotFoundException();
+            Cover? cover = GetCoverByMusicId(id);
 
-            var filePath = Path.Combine(_coverUploadsFolder, cover.Id.ToString());
+            if (cover != null)
+            {
+                var filePath = Path.Combine(_coverUploadsFolder, cover.Id.ToString());
 
-            if (File.Exists(filePath))
-            {
-                var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
-                return fileStream;
+                if (File.Exists(filePath))
+                {
+                    var fileStream = new FileStream(filePath, FileMode.Open, FileAccess.Read);
+                    return fileStream;
+                }
             }
-            else
-            {
-                var fileStream = new FileStream(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets"), "default_cover.png"), FileMode.Open, FileAccess.Read);
-                return fileStream;
-            }
+
+            var fileStreamDefault = new FileStream(Path.Combine(Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "Assets"), "default_cover.png"), FileMode.Open, FileAccess.Read);
+            return fileStreamDefault;
+
         }
     }
 }
