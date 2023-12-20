@@ -12,6 +12,16 @@
       </div>
 
       <div class="md-6 p-3">
+        <label class="form-label">Cover</label>
+        <input type="file" (change)="onCoverSelected($event)" accept="image/*" class="form-control"/>
+      </div>
+
+      <div *ngIf="imageUrl">
+        <img width="400" height="400" [src]="imageUrl" alt="Selected Image" />
+      </div>
+
+
+      <div class="md-6 p-3">
         <button type="submit" class="btn btn-primary">Upload</button>
       </div>
 
