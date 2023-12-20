@@ -41,7 +41,7 @@ export class UploadComponent {
   onSubmit(): void {
     if (this.selectedFile) {
 
-      this.uploadService.uploadMusic(this.selectedFile, this.musicName)
+      this.uploadService.uploadMusic(this.selectedFile, this.musicName, this.coverFile)
         .subscribe(
           response => {
             console.log('File uploaded successfully', response);

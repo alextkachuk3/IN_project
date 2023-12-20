@@ -8,10 +8,13 @@ import { Observable } from 'rxjs';
 export class UploadService {
   constructor(private http: HttpClient) { }
 
-  uploadMusic(file: File, name: string): Observable<any> {
+  uploadMusic(file: File, name: string, coverFile: File | null): Observable<any> {
     const formData: FormData = new FormData();
     formData.append('musicFile', file);
     formData.append('musicName', name);
+    if (coverFile) {
+      formData.append('coverFile', coverFile);
+    }    
 
     const headers = new HttpHeaders({
       Authorization: 'Bearer ' + localStorage.getItem('token')
