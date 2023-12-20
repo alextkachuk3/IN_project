@@ -1,1 +1,12 @@
-<h3>Main comp</h3>
+<div class="grid-container">
+  <div *ngFor="let music of musicList" class="grid-item">
+    <!-- Display music image here -->
+    <img [src]="" alt="Music Image" />
+
+    <!-- Display music name and uploader name getMusicImageSrc(music.id) -->
+    <div class="music-details">
+      <p>{{ music.name }}</p>
+      <p>{{ music.uploaderName }}</p>
+    </div>
+  </div>
+</div>

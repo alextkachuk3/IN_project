@@ -14,7 +14,7 @@ import { AuthorizationService } from './authorization/authorization.service';
   imports: [FormsModule, NgFor, NgIf, NgOptimizedImage, RouterOutlet, RouterLink, NgbModule, HttpClientModule],
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css'],
-  providers: [AuthorizationService]
+  providers: [AuthorizationService, HttpClientModule]
 })
 export class AppComponent implements OnInit {
   public username: string = '';
