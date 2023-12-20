@@ -3,3 +3,11 @@ img {
   height: 40px;
   float: right;
 }
+
+.custom-table {
+  border-collapse: separate;
+}
+
+  .custom-table td {
+    border-right: none; /* Remove right border for each table cell */
+  }

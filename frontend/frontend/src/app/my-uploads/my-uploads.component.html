@@ -1,16 +1,16 @@
 <div class="container p-3">
   <div *ngIf="musics.length>0; else elseBlock" class="p-3">
     <table class="table table-striped">
-      <thead>
-        <tr class="table-success">
-          <th class="md-10">Name</th>
-          <th class="md-2"></th>
+      <thead class="table-light">
+        <tr>
+          <th>Name</th>
+          <th></th>
         </tr>
       </thead>
       <tbody *ngFor="let music of musics; let i = index">
-        <tr class="table-primary">
-          <td class="md-10"> {{music.name}} </td>
-          <td class="md-2">
+        <tr>
+          <td> {{music.name}} </td>
+          <td>
             <a (click)="playMusic(music.id)">
               <img src="../assets/images/play.png" />
             </a>

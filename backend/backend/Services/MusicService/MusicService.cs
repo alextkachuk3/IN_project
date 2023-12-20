@@ -152,5 +152,14 @@ namespace backend.Services.MusicService
 
             return likedMusicDetails;
         }
+
+        public List<MusicInfoDto> GetRecomendation(User user)
+        {
+            return _dbContext.Music
+                .OrderBy(x => Guid.NewGuid())
+                .Take(8)
+                .Select(m => new MusicInfoDto(m.Id, m.Name!, user.Username!, true))
+                .ToList();
+        }
     }
 }

@@ -153,5 +153,13 @@ namespace backend.Controllers
                 return StatusCode(500, new { error = ex.Message });
             }
         }
+
+        [Authorize]
+        [HttpGet("Recomendations")]
+        public IEnumerable<MusicInfoDto> GetRecomendations()
+        {
+            User user = _userService.GetUser(User.Identity!.Name!)!;
+            return _musicService.GetRecomendation(user);
+        }
     }
 }

@@ -20,6 +20,8 @@ namespace backend.Services.MusicService
 
         public List<Music>? GetAllMusic();
 
+        public List<MusicInfoDto> GetRecomendation(User user);
+
         public bool CheckIfLiked(Guid id, User user);
     }
 }
