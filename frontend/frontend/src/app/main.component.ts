@@ -24,7 +24,7 @@ export class MainComponent implements OnInit {
       'Authorization': `Bearer ${this.authService.getToken()}`,
     });
     
-    this.http.get<Music[]>('http://alexunivdeploy-001-site1.ftempurl.com/Music', { headers }).subscribe(
+    this.http.get<Music[]>('https://backend20231220034952.azurewebsites.net/Music/My', { headers }).subscribe(
       (data) => {
         data.forEach((element:any) => this.musics.push(element));
         console.log(this.musics);
@@ -36,7 +36,7 @@ export class MainComponent implements OnInit {
   }
 
   playMusic(musicId: string) {
-    this.http.get(`http://alexunivdeploy-001-site1.ftempurl.com/Music/${musicId}`, { responseType: 'arraybuffer' })
+    this.http.get(`https://backend20231220034952.azurewebsites.net/Music/${musicId}`, { responseType: 'arraybuffer' })
       .subscribe(
         (data: any) => {
           const blob = new Blob([data], { type: 'audio/mpeg' });
