@@ -23,13 +23,13 @@ export class MainComponent implements OnInit {
       Authorization: 'Bearer ' + localStorage.getItem('token')
     });
 
-    this.http.get<MusicInfoDto[]>(`https://localhost:7232/Music/Recomendations`, { headers })
+    this.http.get<MusicInfoDto[]>(`https://backend20231220034952.azurewebsites.net/Music/Recomendations`, { headers })
       .subscribe((musicList: MusicInfoDto[]) => {
         this.musicList = musicList;
       });
   }
 
   getMusicImageSrc(id: string) {
-    return `https://localhost:7232/Music/Cover/${id}`;
+    return `https://backend20231220034952.azurewebsites.net/Music/Cover/${id}`;
   }
 }
