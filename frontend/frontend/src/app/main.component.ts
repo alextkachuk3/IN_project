@@ -32,4 +32,18 @@ export class MainComponent implements OnInit {
   getMusicImageSrc(id: string) {
     return `https://backend20231220034952.azurewebsites.net/Music/Cover/${id}`;
   }
+
+  playMusic(musicId: string) {
+    this.http.get(`https://backend20231220034952.azurewebsites.net/Music/${musicId}`, { responseType: 'arraybuffer' })
+      .subscribe(
+        (data: any) => {
+          const blob = new Blob([data], { type: 'audio/mpeg' });
+          const url = URL.createObjectURL(blob);
+          this.audioSource = url;
+        },
+        (error) => {
+          console.error('Error fetching audio content:', error);
+        }
+      );
+  }
 }
