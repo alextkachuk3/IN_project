@@ -19,10 +19,4 @@
     <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="7.0.3" />
   </ItemGroup>
 
-  <ItemGroup>
-    <None Update="F28DFC145C051E07A0AF17A0325FD992.txt">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-
 </Project>

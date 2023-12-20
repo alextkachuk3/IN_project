@@ -4,6 +4,7 @@ using backend.Services.MusicService;
 using backend.Services.UserService;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using SixLabors.ImageSharp;
 
 namespace backend.Controllers
@@ -135,6 +136,22 @@ namespace backend.Controllers
             }
 
             return Ok(new { Message = "file_uploaded_successfully" });
+        }
+
+        [Authorize]
+        [HttpDelete("{id}")]
+        public IActionResult Delete(string id)
+        {
+            User user = _userService.GetUser(User.Identity!.Name!)!;
+            try
+            {
+                _musicService.DeleteMusic(Guid.Parse(id), user);
+                return NoContent();
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = ex.Message });
+            }
         }
     }
 }
